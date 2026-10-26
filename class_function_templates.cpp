@@ -1,191 +1,63 @@
+//Write a C++ program to demonstrate the concept of templates.
+//Implement a function template to find the maximum of two values and a class template to perform basic arithmetic operations on two numbers.
+
 #include <iostream>
-#include <string>
-#include <stdexcept>
 using namespace std;
 
-// ---------------------------------------------------------------
-// FUNCTION TEMPLATES
-// ---------------------------------------------------------------
-
-// Returns the larger of two values of the same type
-template <typename T>
-T findMax(T a, T b) {
+// Function Template
+template <class T>
+T findMaximum(T a, T b)
+{
     return (a > b) ? a : b;
 }
 
-// Swaps two values of any type
-template <typename T>
-void swapValues(T &a, T &b) {
-    T temp = a;
-    a = b;
-    b = temp;
-}
-
-// Sorts an array in ascending order (bubble sort)
-template <typename T>
-void sortArray(T arr[], int n) {
-    for (int i = 0; i < n - 1; i++) {
-        bool swapped = false;
-        for (int j = 0; j < n - i - 1; j++) {
-            if (arr[j] > arr[j + 1]) {
-                swapValues(arr[j], arr[j + 1]);
-                swapped = true;
-            }
-        }
-        if (!swapped) break;
-    }
-}
-
-// Prints all elements of an array
-template <typename T>
-void printArray(const T arr[], int n) {
-    for (int i = 0; i < n; i++)
-        cout << arr[i] << (i < n - 1 ? ", " : "");
-    cout << '\n';
-}
-
-// ---------------------------------------------------------------
-// CLASS TEMPLATES
-// ---------------------------------------------------------------
-
-// Fixed-size stack that works with any data type
-template <typename T>
-class Stack {
+// Class Template
+template <class T>
+class Calculator
+{
 private:
-    T *data;
-    int capacity;
-    int topIndex;
+    T num1, num2;
 
 public:
-    explicit Stack(int size = 5) : data(nullptr), capacity(size), topIndex(-1) {
-        if (size <= 0)
-            throw invalid_argument("Stack size must be positive.");
-        data = new T[capacity];
+    Calculator(T a, T b)
+    {
+        num1 = a;
+        num2 = b;
     }
 
-    ~Stack() { delete[] data; }
+    void display()
+    {
+        cout << "\nAddition: " << num1 + num2;
+        cout << "\nSubtraction: " << num1 - num2;
+        cout << "\nMultiplication: " << num1 * num2;
 
-    // Prevent shallow copies (data is a raw pointer)
-    Stack(const Stack &) = delete;
-    Stack &operator=(const Stack &) = delete;
-
-    bool isEmpty() const { return topIndex == -1; }
-    bool isFull() const { return topIndex == capacity - 1; }
-    int size() const { return topIndex + 1; }
-
-    void push(const T &value) {
-        if (isFull())
-            throw overflow_error("Stack overflow: cannot push.");
-        data[++topIndex] = value;
-    }
-
-    T pop() {
-        if (isEmpty())
-            throw underflow_error("Stack underflow: cannot pop.");
-        return data[topIndex--];
-    }
-
-    T peek() const {
-        if (isEmpty())
-            throw underflow_error("Stack is empty: nothing to peek.");
-        return data[topIndex];
+        if (num2 != 0)
+            cout << "\nDivision: " << num1 / num2;
+        else
+            cout << "\nDivision: Not possible (division by zero)";
     }
 };
 
-// Holds two values of (possibly) different types
-template <typename T1, typename T2>
-class Pair {
-private:
-    T1 first;
-    T2 second;
+int main()
+{
+    int a = 10, b = 5;
 
-public:
-    Pair(T1 f, T2 s) : first(f), second(s) {}
-    T1 getFirst() const { return first; }
-    T2 getSecond() const { return second; }
-    void display() const {
-        cout << "(" << first << ", " << second << ")\n";
-    }
-};
+    cout << "FUNCTION TEMPLATE";
+    cout << "\nMaximum of " << a << " and " << b
+         << " is: " << findMaximum(a, b);
 
-// ---------------------------------------------------------------
-// MAIN
-// ---------------------------------------------------------------
-int main() {
-    cout << "===== FUNCTION TEMPLATES =====\n";
-    cout << "findMax(10, 25) = " << findMax(10, 25) << '\n';
-    cout << "findMax(3.5, 2.1) = " << findMax(3.5, 2.1) << '\n';
-    cout << "findMax('a', 'z') = " << findMax('a', 'z') << '\n';
-    cout << "findMax<string>(\"apple\", \"mango\") = "
-         << findMax<string>("apple", "mango") << '\n';
+    float x = 12.5f, y = 4.5f;
 
-    int x = 5, y = 9;
-    swapValues(x, y);
-    cout << "\nAfter swapValues: x = " << x << ", y = " << y << '\n';
+    cout << "\nMaximum of " << x << " and " << y
+         << " is: " << findMaximum(x, y);
 
-    string s1 = "Hello", s2 = "World";
-    swapValues(s1, s2);
-    cout << "After swapValues: s1 = " << s1 << ", s2 = " << s2 << '\n';
+    cout << "\n\nCLASS TEMPLATE (INTEGER)";
+    Calculator<int> c1(20, 10);
+    c1.display();
 
-    int iarr[] = {42, 7, 19, 3, 88};
-    double darr[] = {2.5, 9.1, 0.4, 5.5};
-
-    cout << "\nInt array before sort: ";
-    printArray(iarr, 5);
-    sortArray(iarr, 5);
-    cout << "Int array after sort: ";
-    printArray(iarr, 5);
-
-    cout << "Double array before sort: ";
-    printArray(darr, 4);
-    sortArray(darr, 4);
-    cout << "Double array after sort: ";
-    printArray(darr, 4);
-
-    cout << "\n===== CLASS TEMPLATES =====\n";
-
-    // Stack<int>
-    try {
-        Stack<int> intStack(3);
-        intStack.push(10);
-        intStack.push(20);
-        intStack.push(30);
-        cout << "Stack<int> size = " << intStack.size()
-             << ", top = " << intStack.peek() << '\n';
-        cout << "Popped: " << intStack.pop() << '\n';
-        cout << "Popped: " << intStack.pop() << '\n';
-        intStack.push(40);
-        intStack.push(50);
-        intStack.push(60);  // exceeds capacity -> overflow
-    } catch (const overflow_error &e) {
-        cout << "Exception caught: " << e.what() << '\n';
-    }
-
-    // Stack<string>
-    try {
-        Stack<string> strStack(2);
-        strStack.push("first");
-        strStack.push("second");
-        cout << "\nStack<string> popped: " << strStack.pop() << '\n';
-        cout << "Stack<string> popped: " << strStack.pop() << '\n';
-        strStack.pop();  // empty -> underflow
-    } catch (const underflow_error &e) {
-        cout << "Exception caught: " << e.what() << '\n';
-    }
-
-    // Invalid size
-    try {
-        Stack<double> bad(0);
-    } catch (const invalid_argument &e) {
-        cout << "Exception caught: " << e.what() << '\n';
-    }
-
-    // Pair with different types
-    cout << "\nPair examples:\n";
-    Pair<int, string> p1(101, "Alice");
-    Pair<string, double> p2("Pi", 3.14159);
-    p1.display();
-    p2.display();
+    cout << "\n\nCLASS TEMPLATE (FLOAT)";
+    Calculator<float> c2(7.5f, 2.5f);
+    c2.display();
 
     return 0;
 }
